@@ -825,6 +825,11 @@ const Game = {
     if (frame.querySelector(".notification-popup")) return;
 
     const hintKey = this.state.pendingXiaoyuHints[0];
+
+    // 已展示但未选择的hint不再重复弹窗
+    const presented = this.state._falseLeadPresented || {};
+    if (hintKey.startsWith("falseLead") && presented[hintKey]) return;
+    if (this.state._hintPresented && this.state._hintPresented[hintKey]) return;
     const hintTexts = {
       fortuneHint: { icon: "🔮", text: "那个占卜app……你看看她的记录" },
       partyHint: { icon: "🖼", text: "你找到那些照片了？她那天……" },
@@ -1234,6 +1239,7 @@ const Game = {
           <div style="font-size:48px;margin-bottom:16px;">🗑🔒</div>
           <p style="font-size:14px;color:#666;margin-bottom:4px;">最近删除</p>
           <p style="font-size:12px;color:#999;margin-bottom:20px;">恢复照片需要输入密码</p>
+          <p style="font-size:12px;color:#aaa;margin-bottom:16px;font-style:italic;">忘掉这一天……忘掉，对，我要忘掉。</p>
           <input type="text" id="album-layer2-input" maxlength="4" placeholder="输入4位密码"
             style="width:140px;padding:10px;border:1px solid #ddd;border-radius:6px;text-align:center;font-size:22px;letter-spacing:8px;margin-bottom:12px;">
           <button id="album-layer2-btn" style="background:#4caf50;color:#fff;border:none;padding:10px 30px;border-radius:6px;font-size:14px;cursor:pointer;">恢复</button>
@@ -1857,7 +1863,6 @@ const Game = {
         </p>
         ${finalLine ? `<p style="color:#e0e0e0;font-size:16px;margin-top:30px;opacity:0;animation:fadeIn 2s 1.5s forwards;">${finalLine}</p>` : ""}
         <p style="color:#555;font-size:11px;margin-top:24px;">— 结局：${ending.title} —</p>
-        ${hasXiaoyuRevelation ? '<p style="color:#555;font-size:11px;margin-top:6px;opacity:0;animation:fadeIn 1s 5s forwards;">手机震动了一下……</p>' : ""}
         <div style="margin-top:40px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
           <button id="ending-restart" style="background:#333;color:#ccc;border:1px solid #555;padding:10px 20px;border-radius:6px;font-size:13px;cursor:pointer;">重新开始</button>
           <button id="ending-gallery" style="background:#333;color:#ccc;border:1px solid #555;padding:10px 20px;border-radius:6px;font-size:13px;cursor:pointer;">成就图鉴</button>
@@ -1878,9 +1883,19 @@ const Game = {
       });
     }, 200);
 
-    // 最佳结局：小鱼觉醒
+    // 最佳结局：延迟显示小鱼气泡通知
     if (hasXiaoyuRevelation) {
-      setTimeout(() => this.showXiaoyuRevelation(ending.xiaoyuRevelation), 6500);
+      setTimeout(() => {
+        const bubble = document.createElement("div");
+        bubble.style.cssText = "position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:#4caf50;color:#fff;padding:12px 20px;border-radius:20px;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(76,175,80,0.4);opacity:0;transition:opacity 0.8s;white-space:nowrap;z-index:301;";
+        bubble.innerHTML = `🐟 小鱼似乎有话想对你说……`;
+        bubble.addEventListener("click", () => {
+          el.remove();
+          this.showXiaoyuRevelation(ending.xiaoyuRevelation);
+        });
+        el.appendChild(bubble);
+        setTimeout(() => bubble.style.opacity = "1", 100);
+      }, 3000);
     }
   },
 
@@ -1943,13 +1958,23 @@ const Game = {
 
     const body = document.getElementById("revelation-body");
     this.streamMessages(body, messages, () => {
-      // 小鱼消失后的额外效果
       setTimeout(() => {
         const finalLine = document.createElement("div");
         finalLine.style.cssText = "text-align:center;padding:40px 20px;color:#bbb;font-size:13px;line-height:2;";
-        finalLine.innerHTML = "风从窗外吹进来。<br>窗帘轻轻动了一下。<br><br>房间里很安静。<br><br>手机不再响了。";
+        finalLine.innerHTML = `风从窗外吹进来。<br>窗帘轻轻动了一下。<br><br>房间里很安静。<br><br>手机不再响了。
+          <div style="margin-top:30px;display:flex;gap:12px;justify-content:center;">
+            <button id="rev-restart" style="background:#333;color:#ccc;border:1px solid #555;padding:10px 20px;border-radius:6px;font-size:13px;cursor:pointer;">重新开始</button>
+            <button id="rev-gallery" style="background:#333;color:#ccc;border:1px solid #555;padding:10px 20px;border-radius:6px;font-size:13px;cursor:pointer;">成就图鉴</button>
+          </div>`;
         body.appendChild(finalLine);
         body.scrollTop = body.scrollHeight;
+        document.getElementById("rev-restart").addEventListener("click", () => {
+          localStorage.removeItem("lostgirl_save");
+          location.reload();
+        });
+        document.getElementById("rev-gallery").addEventListener("click", () => {
+          this.showAchievementGallery();
+        });
       }, 1500);
     });
   },
