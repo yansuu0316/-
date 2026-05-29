@@ -20,6 +20,9 @@ const Game = {
       sawClearedHistory: false,
       sawComplaintLetter: false,
       sawSchoolReport: false,
+      sawFortuneApp: false,
+      sawBrowser: false,
+      sawAccounting: false,
       weiboUnlocked: false,
       postedExposure: false,
       gameComplete: false,
@@ -140,6 +143,13 @@ const Game = {
     if (flags.sawGrandpaChat) { ep.C.grandpaChat = true; ep.D.grandpaMoney = true; }
     if (flags.sawClassGroup) ep.C.classGroup = true;
     if (flags.xiaoyuHints && flags.xiaoyuHints.finalMessage) ep.C.xiaoyuFull = true;
+    if (flags.sawFortuneApp) ep.A.fortuneViewed = true;
+    if (flags.sawBrowser) ep.B.browserSurface = true;
+    if (flags.sawAccounting) ep.D.accounting = true;
+    // 从其他进度推断：如果已解锁清除记录，必然打开过浏览器
+    if (flags.sawClearedHistory) ep.B.browserSurface = true;
+    // 如果已触发fortuneHint的回应，必然看过占卜app
+    if (flags.xiaoyuHints && flags.xiaoyuHints.fortuneHint) ep.A.fortuneViewed = true;
 
     // 重新检查所有证据链
     ["A", "B", "C", "D"].forEach(chain => this.checkChainCompletion(chain));
@@ -1431,6 +1441,7 @@ const Game = {
       this.collectDiaryEvidence(note.id);
     }
     if (note.id === "accounting") {
+      this.state.flags.sawAccounting = true;
       this.collectEvidence("D", "accounting");
     }
 
@@ -1439,6 +1450,7 @@ const Game = {
 
   // --- 浏览器 ---
   renderBrowser() {
+    this.state.flags.sawBrowser = true;
     this.collectEvidence("B", "browserSurface");
     const historyEl = document.getElementById("browser-history");
     const page = document.getElementById("browser-page");
@@ -1766,6 +1778,7 @@ const Game = {
 
   // --- 星梦女巫 ---
   renderFortune() {
+    this.state.flags.sawFortuneApp = true;
     this.collectEvidence("A", "fortuneViewed");
     const content = document.getElementById("fortune-content");
     content.innerHTML = `<h4 style="color:#e0d0ff;margin-bottom:16px;font-size:14px;">✨ 占卜记录 ✨</h4>`;
