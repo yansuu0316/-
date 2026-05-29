@@ -1053,25 +1053,70 @@ const STORY = {
         { title: "五高校联合发起'梧桐计划' 守护校园安全", source: "光明日报" },
       ],
       finalLine: "谢谢你。",
-      // 小鱼觉醒
-      xiaoyuRevelation: [
-        { type: "system", text: "— 小鱼发来了一条消息 —" },
-        { type: "left", text: "等一下" },
-        { type: "left", text: "我想起来了" },
-        { type: "left", text: "我不是小鱼" },
-        { type: "left", text: "从来就没有小鱼这个人" },
-        { type: "left", text: "我是梧桐" },
-        { type: "left", text: "不……我是她分裂出来的那个人格" },
-        { type: "left", text: "她太孤单了 所以我出现了" },
-        { type: "left", text: "后来她不在了 我就忘了自己是谁" },
-        { type: "left", text: "只记得 有一个女孩死了 我的朋友死了 我必须找到真相" },
-        { type: "left", text: "谢谢你 帮我找到了" },
-        { type: "left", text: "现在我可以走了" },
-        { type: "left", text: "去她那边" },
-        { type: "left", text: "再见" },
-        { type: "system", text: "— 小鱼的头像变灰了 —" },
-        { type: "system", text: "— 这个联系人已不存在 —" },
-      ]
+      xiaoyuRevelation: {
+        phases: [
+          {
+            messages: [
+              { type: "system", text: "— 小鱼发来了一条消息 —" },
+              { type: "left", text: "……" },
+              { type: "left", text: "等一下" },
+              { type: "left", text: "我脑子里有什么东西在响" },
+              { type: "left", text: "好奇怪……你帮我把真相都拼出来之后" },
+              { type: "left", text: "我突然想起来一些事情" },
+            ],
+            choices: ["想起了什么？", "你还好吗？"],
+          },
+          {
+            messages: [
+              { type: "left", text: "我想起来……我好像不叫小鱼" },
+              { type: "left", text: "不对" },
+              { type: "left", text: "从来就没有小鱼这个人" },
+              { type: "left", text: "这个名字……是她取的" },
+              { type: "left", text: "她说 如果有一天她不在了 希望有个人能替她记住一切" },
+            ],
+            choices: ["她是谁？", "你到底是谁？"],
+          },
+          {
+            messages: [
+              { type: "left", text: "她叫梧桐" },
+              { type: "left", text: "我……是她" },
+              { type: "left", text: "不 我是她分裂出来的另一个人格" },
+              { type: "left", text: "她被伤害的时候 太痛了 太孤单了" },
+              { type: "left", text: "没有人帮她 没有人听她说话" },
+              { type: "left", text: "所以……我出现了" },
+              { type: "left", text: "我是她幻想出来的朋友" },
+            ],
+            choices: ["所以你一直都在这部手机里？", "那这些聊天记录……"],
+          },
+          {
+            messages: [
+              { type: "left", text: "对" },
+              { type: "left", text: "这些聊天记录 都是她在跟自己说话" },
+              { type: "left", text: "她把不敢跟任何人说的话 都说给了「小鱼」" },
+              { type: "left", text: "后来她走了" },
+              { type: "left", text: "我就忘了自己是谁" },
+              { type: "left", text: "只记得——有一个女孩死了 我的朋友死了" },
+              { type: "left", text: "我必须找到真相" },
+            ],
+            choices: ["现在真相找到了", "你接下来打算怎么办"],
+          },
+          {
+            messages: [
+              { type: "left", text: "嗯" },
+              { type: "left", text: "谢谢你" },
+              { type: "left", text: "谢谢你愿意来" },
+              { type: "left", text: "谢谢你帮她把所有的事情都说出去了" },
+              { type: "left", text: "现在我可以走了" },
+              { type: "left", text: "去她那边" },
+              { type: "left", text: "……" },
+              { type: "left", text: "再见" },
+              { type: "system", text: "— 小鱼的头像变灰了 —" },
+              { type: "system", text: "— 这个联系人已不存在 —" },
+            ],
+            choices: null,
+          }
+        ]
+      }
     }
   },
 

@@ -1954,7 +1954,7 @@ const Game = {
     document.getElementById("gallery-close").addEventListener("click", () => overlay.remove());
   },
 
-  showXiaoyuRevelation(messages) {
+  showXiaoyuRevelation(revelationData) {
     const frame = document.getElementById("phone-frame");
     const chatEl = document.createElement("div");
     chatEl.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;z-index:310;display:flex;flex-direction:column;background:#f5f5f5;opacity:0;transition:opacity 0.8s;";
@@ -1964,32 +1964,66 @@ const Game = {
         <span class="app-title" style="margin-left:8px;">小鱼</span>
       </div>
       <div class="conversation-body" id="revelation-body" style="flex:1;overflow-y:auto;padding:16px;padding-top:40px;"></div>
+      <div id="revelation-choices" class="hidden" style="padding:12px 16px;background:#fff;border-top:1px solid #eee;"></div>
     `;
 
     frame.appendChild(chatEl);
     setTimeout(() => chatEl.style.opacity = "1", 100);
 
     const body = document.getElementById("revelation-body");
-    this.streamMessages(body, messages, () => {
-      setTimeout(() => {
-        const finalLine = document.createElement("div");
-        finalLine.style.cssText = "text-align:center;padding:40px 20px;color:#bbb;font-size:13px;line-height:2;";
-        finalLine.innerHTML = `风从窗外吹进来。<br>窗帘轻轻动了一下。<br><br>房间里很安静。<br><br>手机不再响了。
-          <div style="margin-top:30px;display:flex;gap:12px;justify-content:center;">
-            <button id="rev-restart" style="background:#333;color:#ccc;border:1px solid #555;padding:10px 20px;border-radius:6px;font-size:13px;cursor:pointer;">重新开始</button>
-            <button id="rev-gallery" style="background:#333;color:#ccc;border:1px solid #555;padding:10px 20px;border-radius:6px;font-size:13px;cursor:pointer;">成就图鉴</button>
-          </div>`;
-        body.appendChild(finalLine);
+    const choicesArea = document.getElementById("revelation-choices");
+    const phases = revelationData.phases;
+    let currentPhase = 0;
+
+    const playPhase = () => {
+      if (currentPhase >= phases.length) return;
+      const phase = phases[currentPhase];
+      this.streamMessages(body, phase.messages, () => {
         body.scrollTop = body.scrollHeight;
-        document.getElementById("rev-restart").addEventListener("click", () => {
-          localStorage.removeItem("lostgirl_save");
-          location.reload();
-        });
-        document.getElementById("rev-gallery").addEventListener("click", () => {
-          this.showAchievementGallery();
-        });
-      }, 1500);
-    });
+        if (phase.choices) {
+          choicesArea.classList.remove("hidden");
+          choicesArea.innerHTML = "";
+          phase.choices.forEach(text => {
+            const btn = document.createElement("button");
+            btn.className = "chat-choice-btn";
+            btn.textContent = text;
+            btn.addEventListener("click", () => {
+              choicesArea.classList.add("hidden");
+              const playerMsg = document.createElement("div");
+              playerMsg.className = "msg msg-right";
+              playerMsg.textContent = text;
+              body.appendChild(playerMsg);
+              body.scrollTop = body.scrollHeight;
+              currentPhase++;
+              setTimeout(playPhase, 800);
+            });
+            choicesArea.appendChild(btn);
+          });
+        } else {
+          // 最后阶段，无选择
+          setTimeout(() => {
+            const finalLine = document.createElement("div");
+            finalLine.style.cssText = "text-align:center;padding:40px 20px;color:#bbb;font-size:13px;line-height:2;";
+            finalLine.innerHTML = `风从窗外吹进来。<br>窗帘轻轻动了一下。<br><br>房间里很安静。<br><br>手机不再响了。
+              <div style="margin-top:30px;display:flex;gap:12px;justify-content:center;">
+                <button id="rev-restart" style="background:#333;color:#ccc;border:1px solid #555;padding:10px 20px;border-radius:6px;font-size:13px;cursor:pointer;">重新开始</button>
+                <button id="rev-gallery" style="background:#333;color:#ccc;border:1px solid #555;padding:10px 20px;border-radius:6px;font-size:13px;cursor:pointer;">成就图鉴</button>
+              </div>`;
+            body.appendChild(finalLine);
+            body.scrollTop = body.scrollHeight;
+            document.getElementById("rev-restart").addEventListener("click", () => {
+              localStorage.removeItem("lostgirl_save");
+              location.reload();
+            });
+            document.getElementById("rev-gallery").addEventListener("click", () => {
+              this.showAchievementGallery();
+            });
+          }, 2000);
+        }
+      });
+    };
+
+    playPhase();
   },
 
   // === 证据链系统 ===
