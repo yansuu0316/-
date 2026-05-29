@@ -1789,7 +1789,7 @@ const Game = {
     if (!this.state.flags.postedExposure) {
       content.innerHTML = `
         <div class="weibo-compose">
-          <textarea id="weibo-text" placeholder="说点什么...">[证据整理] 木同一中学生梧桐坠楼案真相：\n\n1. 长期遭受以班长陈昊为首的群体性霸凌\n2. 被陈昊安排至其家族酒店打工期间遭张伟性侵\n3. 精神崩溃后意外坠楼\n4. 陈家集团捐款500万，学校压下真相定性为"自杀"\n5. 梧桐生前曾向校长信箱举报，学校未予处理\n\n所有证据附图如下...</textarea>
+          <textarea id="weibo-text" placeholder="说点什么...">[证据整理] 十一年前木同一中学生梧桐坠楼案真相：\n\n1. 长期遭受以班长陈昊为首的群体性霸凌\n2. 被陈昊安排至其家族酒店打工期间遭张伟性侵\n3. 精神崩溃后意外坠楼\n4. 陈家集团捐款500万，学校压下真相定性为"自杀"\n5. 梧桐生前曾向校长信箱举报，学校未予处理\n\n所有证据附图如下...</textarea>
           <button class="weibo-post-btn" id="weibo-post-btn">发布</button>
         </div>
       `;
